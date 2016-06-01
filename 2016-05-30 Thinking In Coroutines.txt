@@ -1,0 +1,49 @@
+Lucas Langa: Thinking in Coroutines
+
+* What is the advantage of async
+  * Latency drives user experience
+* Twisted
+* Aysnc IO only becomes practical once we have yield/from
+* AsyncIO is an eventloop that calls callbacks
+  * No magic; just a loop and callbacks
+  * One event loop calling callbacks
+  * Maximizes the use of a single thread
+* .get_event_loop() -> gets the event loop for a single thread
+* .call_soon() -> call a function as soon as you're free
+* If any callbacks are slow, all operations following are slowed down
+* If you have slow callbacks, asyncIO will warn you
+* How can we make callbacks faster
+  * Coroutine functions
+    * Create a coroutine function with async def
+    * await the function
+    * A coroutine is an instantiated call to a coroutine function
+  * .create_task -> execute a task 
+    * AsyncIO creates a task
+    * And then calls loop.call_soon() of one step of the task
+  * What's a step?
+    * One execution until yield
+* run_until_complete -> run until finished and then finish
+* .wait -> wait for all tasks to finish
+* each task can return data in in its result object
+* The nice thing about coroutines is that you can reason about shared state more easily -> nothing will modify shared state until you call await
+* Fanning out subprocesses with asyncIO is a lot easier than the normal case
+* aiohttp
+* subprocess
+* aiopostgres
+* uvloop
+* Two kinds of executors:
+  * ThreadpoolExecutor
+  * ProcessPoolExecutor
+* Facebook and Instagram very heavily
+* Thrift
+* Random advice
+  * Use Python 3.5+
+  * Write unit tests
+    * Much easier and important with unit tests
+    * Mocking is easier with reduced shared state
+  * Set up debugging and logging
+    * GC debugging
+  * PYTHONASYNCIODEBUG=1
+  * Just return from generators
+  * Use ProcessPoolExecutors
+  * ReadTheDocs and read the source; it's clear and easy

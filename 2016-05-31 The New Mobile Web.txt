@@ -1,0 +1,49 @@
+The New Mobile Web
+
+* The new mobile web -> The web
+* The power of the web
+  * Open
+  * Universal 
+  * Decentralized
+* Apps vs. Web
+  * Web has been under attack from app stores
+  * If we want to preserve the web, the web has to be able to deliver the same experience
+* Why did apps win
+* In 2016 the web gets the same capabilities as apps
+  * Service worker
+  * Web push
+* Service workers
+  * Script that acts like a normal script tag, but for an entire domain
+  * Runs independently between tabs
+  * Higher scope
+  * Background processing
+  * Need to be served over HTTPS
+  * Navigator.serviceWorker.register()
+  * Service workers can be scoped 
+  * Service worker APIs are all event-based
+    * Install event
+  * Service workers can hijack requests
+    * Useful for offline access
+    * fetch event
+  * The difference between service worker and past standards is that service workers is an imperative API - a toolbox, rather than a standard
+  * The HTML has no idea that it's not talking to the network
+    * Resources can be returned by service worker
+* Pokedex.org - example site
+* serviceworke.rs
+* Can use service workers to mock out backend for testing
+
+* Push Notifications
+  * Many interactions are driven by notifications
+  * Websites can now send notifications
+  * Can receive push events
+  * Push service handled by vendor - how do I know if 
+  * firefox: about:debugging
+  * Each user's browser gets a unique URL and private key
+  * pushmanager.subscribe
+    * Save URL to your backend
+  * Works in Firefox and Chrome
+
+* App manifest
+  * Turn your website into an app
+  * Can drop browser chrome; 
+  * Can preload assets, scripts, etc.

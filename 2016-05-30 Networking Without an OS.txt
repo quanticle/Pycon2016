@@ -1,0 +1,34 @@
+Networking without an OS
+
+* Continuation of Python w/o OS
+* Python used for testing BIOS
+* EFI has networking support
+* Useful for reading test data
+* DHCP support
+* Bridge EFI networking to Python sockets
+* Want to be backwards compatible with Python networking code
+* Berkeley sockets
+* Python has C modules that implement the socket functionality
+* Need to reimplement that API???
+* BITS implementationa
+  * C for event handling
+  * All other code is in Python
+* All EFI calls from Python
+* EFI doesn't do GC
+* Python doesn't know about EFI handles - don't want to GC EFI objects
+* EFI protocols
+  * IPV4_CONFIG_2 - DHCP
+  * TCP4_SERVICE_BINDING - make socket
+  * TCP4_PROTOCOL - socket
+* Impedance mismatch - difference between select and EFI
+  * select checks for data
+  * EFI expects a buffer
+  * Not updated frequently 
+* All EFI calls are asynchronous
+  * Need to implement blocking mechanism
+* Socket class
+  * Busy loops - to see if data is there
+  * sendall - just sends data
+* Socket gets all the data, and you call recv() to pull data off the queue
+* Why not make networking async by default? 
+  * Async support is implemented, as well as synchronous stuff

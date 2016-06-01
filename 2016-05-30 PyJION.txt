@@ -1,0 +1,39 @@
+PyJion - Repurpose CoreCLR JIT for Python
+
+* Why? Faster is nicer
+* Quite a history of JITs in Python
+  * PyPy
+    * JIT toolchain in Python
+    * Not 100% compatible with C extension modules
+  * Pyston
+    * JIT for Python 2.7
+  * Numba - numerics specific
+    * Not general purpose
+    * Targeted for numeric specific methods
+  * Psyco & Unladen Swallow
+    * Old 
+    * Psyco -> PyPy
+    * Unladen Swallow -> Google sponsored, ran into issues with LLVM
+* PyJion has 100% compatibility
+* Only JIT that supports Python 3.5
+* JIT at the object level
+* Translate Python bytecode to MSIL
+* Run an abstract interpreter over the bytecode to gather basic details
+* Then CoreCLR JITs it
+* CoreCLR is an assembler for Pyjion
+* Use Cpython's C API to maintain compatibility
+* Give Python a frame evaluation function
+* Add extra hidden scratch space on each object
+  * execution count to track which functions are hot
+  * JIT failures
+  * trampoline function to record types
+* Challenges
+  * CoreCLR has a single stack, CPython have two
+  * CPython has a separate stack for exceptions
+    * Exception handling was the most difficult part of the translation
+  * CPython has a few opcodes that result in a variable number of items on the stack
+    * finally blocks 
+    * finally
+* Pyjion is faster than most things, but string manipulation is slower, because CPython has string optimizations 
+* More optimization needed
+* [Ironically, the purpose of the talk is "faster is better", but Pyjion is slower????]

@@ -1,0 +1,47 @@
+The Cobbler's Children Have No Shoes: Building Better Tools For Ourselves
+
+* A short history of tools
+  * version control
+  * issue trackers
+  * continuous integration
+  * code review
+  * deployment automation
+  * Emerging trends
+    * CI for PRs
+    * Linting 
+    * Automated coverage tracking
+    * livegrep.com - we have //index
+    * @mentionbot - automatically find PR reviewers
+
+* Workflow
+  * Small branches that turn into PRs
+
+* Build more tailored tools
+  * Automation > Process
+  * Automation scales better
+    * Human enforced processes break down
+    * Easier to update process
+    * Easier to discuss process - more concrete experience
+    * Always know what the correct behavior is
+      * No deviation between documented processes and actual processes
+  * APIs!
+    * Our existing tools have APIs; we should use them
+    * Issues
+      * Create issues
+      * Add/remove labels
+      * Add comment
+      * Assign to someone
+    * PR:
+      * Create a PR (git already does this from the command line)
+      * Assign PRs
+      * Automatic code review
+  * Examples
+    * github3.py -- python bindings to github client
+    * Make a second account for bots - don't use your own acct
+    * Scan for expiring SSL certificates and file issues
+    * Auto-label security issues
+  * Other ideas
+    * Automatically file tickets every three weeks for SDK updates
+    * Automatically review UI changes
+  * Enforce PR process 
+    * TFS does this automatically

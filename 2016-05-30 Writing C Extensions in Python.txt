@@ -1,0 +1,47 @@
+Here Be Dragons 
+* Why C
+  * Binding perf
+  * Interface with libs
+  * Free yourself from the GIL
+
+Memory Management
+* Automatic reference counting
+* We have to respect the idea of reference counting in C
+* Python only has GC, but it only applies to cyclic references and containers
+* GC won't save you from C mistakes
+
+2 things to avoid:
+* Memory leaks
+  * Py_DECREF - decrement ref count in C
+* Access after deallocation
+  * Don't count references manually - you might be accessing garbage memory anyway
+
+3 kinds of PyObject*
+* New
+  * Created in C code
+* Stolen
+  * Created and assigned (e.g. appended to a list)
+* Borrowed
+  * Used when getting a python object
+  * Shared references
+* Programming by contract
+  * New -> your job to dealloc
+  * Stolen -> thief deallocates
+  * Borrowed -> real owner can dealloc at any time unless you "show interest"
+* Borrowed references are the source of the most subtle bugs
+  * Ambiguity as to who is responsible for dealloaction
+  * Runtime errors + data dependent errors
+  * Py_INCREF - indicate your reference by incrementing the reference count
+  * Release interest by running Py_DECREF
+* Single place for clean-up code
+  * No early returns
+* Exception consistency
+  * Either raise an extension and return null
+  * OR return non-null and don't raise exception
+* Writing Pythonic C
+  * Use goto to jump to finally block
+* Use dependency injection - don't have functions create their own PyObject arguments
+
+github.com/paulross
+
+Python Extension Patterns

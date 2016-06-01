@@ -1,0 +1,8 @@
+Delete
+  * Can be a good idea
+
+Put vs. post
+
+Options - what verbs a client is allowed to use
+
+Head - like get but just for metadata

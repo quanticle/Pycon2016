@@ -1,0 +1,136 @@
+Removing the GIL, by Larry Hastings
+
+* History
+  * Added in 1992 to make thread support possible
+
+* Ramifications
+  * Simple
+    * Easy to get right 
+  * No deadlocks
+  * Low overhead
+    * Invoked infrequently
+    * Fast for single-threaded code
+  * Okay for I/O bound programs
+  * Bad for CPU bound programs
+    * code only runs on a single core
+  * We now live in a multicore world and Python is single core
+  * Python can use everything except multiple cores
+
+* Previous attempt to remove GIL
+  * Python 1.4
+    * No changes to C API
+    * Globals -> pythreadstate
+    * Made code between 4x and 7x slower
+      * Synchronization overhead
+
+* Gilectomy
+  * Try again
+  * Technical considerations
+    * Reference counting
+    * Globals and static
+      * Per-thread info that needs to be kept separate
+      * Pre-created objects
+    * C extensions
+      * C API is not re-entrant
+    * Atomicity of operations
+      * Data structure operations have to be atomic
+  * Political considerations
+    * Don't hurt single-threaded performance
+    * Don't break C extensions
+      * Python 3.0 broke a lot of C extensions, let's not do that again
+    * Don't make it "too complicated"
+      * CPython is easy to work on
+      * Don't make it harder to reason about
+
+* Tracing garbage collection
+  * what everybody else does
+    * Java, C#, Rust, Go, D, etc.
+  * Conventional wisdom: about as fast
+  * Will break C extensions
+  * More complicated than reference counting -> more bugs
+
+* Software transactional memory
+  * Very early
+  * Too complicated and hard to get right
+
+* Proposal
+  * Keep reference counting
+  * Atomic incr/decr
+  * Globals and static variables had already been moved into thread_state struct
+  * C extension parallelism
+    * Some C extensions will break
+  * Atomicity
+    * Locks everywhere
+    * New lock API
+      * Py_LOCK()
+      * Py_UNLOCK()
+  * Any C mutable object needs to be locked
+    * Str
+      * Hash
+      * utf08
+      * wstr
+      * Need a lock
+  * Userspace locks
+    * Lock that only uses userspace resources until contention happens
+    * Linux futex
+    * Windows critical_section
+    * OSX pthread_mutex
+    * So we might be okay for our major platform
+  * Political constraints
+    * How do we not break c extensions
+      * Two builds
+      * Complicating CPython source code
+      * 2 entry points on each library
+        * Without-GIL build doesn't break anyone's C extensions, because it has a different entry point
+        * Allows you to inspect an extension and see if it supports the GIL
+    * Slightly different C API
+      * New API: enforce API standards
+        * Make PyType_Ready and PEP 489 mandatory
+
+* How to remove the GIL
+  * Switch incr and decr to atomic ops
+  * choose locking mechanism
+  * lock dictobject
+  * lock listobject
+  * Lock 10 freelists
+  * Disable cyclic GC, track, untrack
+  * Kill the GIL
+  * Use TLS threadstate
+  * fix tests
+    * Most single threaded tests still work
+    * Multithread tests all break
+
+* Language summit benchmarks
+  * 3.5x slower wall time
+  * 25x slower CPU time
+  * 96% of the time - it's doing something else
+  * Very little code right now runs in the gilectomy version - makes benchmarking hard
+    * Dicts and lists work
+    * Strings sort of work
+  * Gilectomy version is slower with more cores ?!
+    * 2x slower with one thread
+    * 19x slower with 7 threads
+  * why is it slow 
+    * Synchronization cache misses
+      * atomic incr and decr throws away the cache line for the object
+      * This wrecks your cache locality
+  * the real problem is that nothing is private so every step has to do the safe thing
+    * C python can do things the fast unsynchronized way
+  * Need to change the approach so that we get threading guarantees
+
+* Where do we go from here
+  * Buffered reference count
+  * Immortal objects
+  * Coalesced reference counting
+  * Thread private locking
+    * Most objects never leave the thread that creates it
+    * Recognize thread local objects and don't bother locking them
+  * Garbage collection ???
+    * Stop the world 
+    * Buffered track and untrack
+  * Autolock around C extensions???
+
+* Final thoughts
+  * We don't know if this is going to work
+  * Not interesting until we can demonstrate speed improvements
+  
